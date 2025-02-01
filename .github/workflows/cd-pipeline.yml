@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  pre-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
@@ -23,11 +23,50 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Dar permisos a Jest
-        run: chmod +x node_modules/.bin/jest
+      - name: Análisis estático con ESLint
+        run: npx eslint . --ext .js
 
-      - name: Ejecutar pruebas
+      - name: Auditoría de dependencias con npm audit
+        run: npm audit --audit-level=high || echo "Se encontraron vulnerabilidades, revisarlas en npm audit"
+
+  build:
+    needs: pre-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar el código fuente (si aplica)
+        run: echo "Compilación en Node.js lista"
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar pruebas unitarias con Jest
         run: npm test
+
+      - name: Ejecutar pruebas de integración con Selenium
+        run: echo "Pruebas de integración con Selenium pendientes de implementación"
 
       - name: Escaneo de vulnerabilidades con Trivy
         uses: aquasecurity/trivy-action@master
@@ -44,17 +83,30 @@ jobs:
           SONAR_HOST_URL: 'https://sonarcloud.io'
         with:
           args: >
-            -Dsonar.organization=galof2002
-            -Dsonar.projectKey=GaLoF2002_login-express
+            -Dsonar.organization=GaloAndresE
+            -Dsonar.projectKey=GaloAndresE_login-express
+            -Dsonar.branch.name=main
 
   deploy:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Desplegar en entorno de pruebas
-        run: echo "Desplegando en entorno de pruebas..."
+      - name: Checkout código
+        uses: actions/checkout@v3
 
-      - name: Validaciones de políticas de despliegue
+      - name: Construir y levantar contenedores con Docker Compose
+        run: docker-compose up -d
+
+      - name: Esperar a que los contenedores estén listos
+        run: sleep 10
+
+      - name: Verificar estado de los contenedores
+        run: docker ps
+
+      - name: Escaneo continuo de contenedores en ejecución con Trivy
+        run: trivy --severity HIGH,CRITICAL --format table --timeout 5m --exit-code 1 container my_app_container
+
+      - name: Validaciones de despliegue
         run: echo "Ejecutando validaciones de seguridad..."
 
       - name: Desplegar en producción simulada

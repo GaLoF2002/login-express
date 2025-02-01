@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    image: node:18
+    container_name: my_app_container
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["npm", "start"]
+    ports:
+      - "3000:3000"
+
+  trivy:
+    image: aquasec/trivy
+    container_name: trivy_scanner
+    command: ["trivy", "server"]
+    ports:
+      - "8080:8080"
