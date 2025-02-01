@@ -23,8 +23,11 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Dar permisos a ESLint
+        run: chmod +x node_modules/.bin/eslint
+
       - name: Análisis estático con ESLint
-        run: npx eslint . --config eslint.config.js
+        run: npx --no-install eslint .
 
       - name: Auditoría de dependencias con npm audit
         run: npm audit --audit-level=high || echo "Se encontraron vulnerabilidades, revisarlas en npm audit"
