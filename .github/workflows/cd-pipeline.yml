@@ -27,7 +27,9 @@ jobs:
         run: chmod +x node_modules/.bin/eslint
 
       - name: Análisis estático con ESLint
-        run: npx --no-install eslint .
+        run: npx eslint .
+
+
 
       - name: Auditoría de dependencias con npm audit
         run: npm audit --audit-level=high || echo "Se encontraron vulnerabilidades, revisarlas en npm audit"
