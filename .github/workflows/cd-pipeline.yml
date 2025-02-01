@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar pruebas
+        run: npm test
+
+      - name: Escaneo de vulnerabilidades con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'node:18'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Analizar código con SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: 'https://sonarcloud.io'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en entorno de pruebas
+        run: echo "Desplegando en entorno de pruebas..."
+
+      - name: Validaciones de políticas de despliegue
+        run: echo "Ejecutando validaciones de seguridad..."
+
+      - name: Desplegar en producción simulada
+        run: echo "Despliegue exitoso en producción simulada."
