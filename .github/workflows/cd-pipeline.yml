@@ -91,8 +91,8 @@ jobs:
           SONAR_HOST_URL: 'https://sonarcloud.io'
         with:
           args: >
-            -Dsonar.organization=GaloAndresE
-            -Dsonar.projectKey=GaloAndresE_login-express
+            -Dsonar.organization=galof2002
+            -Dsonar.projectKey=GaLoF2002_login-express
             -Dsonar.branch.name=main
 
   deploy:
