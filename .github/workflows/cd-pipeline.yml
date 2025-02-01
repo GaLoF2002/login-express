@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Análisis estático con ESLint
-        run: npx eslint . --ext .js
+        run: npx eslint .
 
       - name: Auditoría de dependencias con npm audit
         run: npm audit --audit-level=high || echo "Se encontraron vulnerabilidades, revisarlas en npm audit"
