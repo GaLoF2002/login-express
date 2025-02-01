@@ -23,12 +23,8 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Dar permisos a Jest
-        run: chmod +x node_modules/.bin/jest
-
       - name: Ejecutar pruebas
         run: npm test
-
 
       - name: Escaneo de vulnerabilidades con Trivy
         uses: aquasecurity/trivy-action@master
@@ -43,6 +39,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: 'https://sonarcloud.io'
+        with:
+          args: >
+            -Dsonar.organization=Tgalof2002
+            -Dsonar.projectKey=login-express
 
   deploy:
     needs: build
