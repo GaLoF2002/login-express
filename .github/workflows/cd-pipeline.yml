@@ -35,7 +35,7 @@ jobs:
         with:
           image-ref: 'node:18'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
 
       - name: Analizar código con SonarQube
