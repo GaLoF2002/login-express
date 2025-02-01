@@ -67,8 +67,11 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Dar permisos a Jest
+        run: chmod +x node_modules/.bin/jest
+
       - name: Ejecutar pruebas unitarias con Jest
-        run: npm test
+        run: npx jest
 
       - name: Ejecutar pruebas de integración con Selenium
         run: echo "Pruebas de integración con Selenium pendientes de implementación"
